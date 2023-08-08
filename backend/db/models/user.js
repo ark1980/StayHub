@@ -9,6 +9,11 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      User.hasMany(models.Spot, {
+        foreignKey: "ownerId",
+        onDelete: "CASCADE",
+        hooks: true,
+      });
     }
   }
   User.init(
@@ -18,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         validate: {
           len: [2, 30],
-          isAlpha: true
+          isAlpha: true,
         },
       },
       lastName: {
@@ -26,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         validate: {
           len: [2, 30],
-          isAlpha: true
+          isAlpha: true,
         },
       },
       username: {
