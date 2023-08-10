@@ -1,16 +1,15 @@
 "use strict";
-/** @type {import('sequelize-cli').Migration} */
+const { Spot } = require('../models');
 
 let options = {};
 if (process.env.NODE_ENV === "production") {
   options.schema = process.env.SCHEMA; // define your schema in options object
 }
 
+/** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    options.tableName = "Spots";
-    return queryInterface.bulkInsert(
-      options,
+    await Spot.bulkCreate(
       [
         {
           ownerId: 1,
@@ -23,7 +22,7 @@ module.exports = {
           name: "Entire Apartment",
           description:
             "Elegant and newly remodeled this 1 bedroom 1 bathroom apartment is perfectly located in one of San Francisco's most sought-after neighborhoods: Pacific Heights. ",
-          price: 334.00,
+          price: 334.0,
         },
         {
           ownerId: 2,
@@ -36,7 +35,7 @@ module.exports = {
           name: "Full House",
           description:
             "Live the life of luxury in this beautiful environment friendly Vegas home. ",
-          price: 255.00,
+          price: 255.0,
         },
         {
           ownerId: 3,
@@ -49,7 +48,7 @@ module.exports = {
           name: "Luxury Downtown Loft",
           description:
             "Dream in a luxury haven in the heart of Times Square. Elevated on the 23rd floor, marvel at the breathtaking Manhattan skyline.",
-          price: 324.00,
+          price: 324.0,
         },
         {
           ownerId: 1,
@@ -60,8 +59,9 @@ module.exports = {
           lat: 20.7645358,
           lng: -150.4730327,
           name: "Dreamy small cottage in tropical garden setting",
-          description: "Step into a dreamy world of tropical wonder, surrounded by lush gardens and serene beauty. This small cottage is the epitome of coziness and charm, providing a peaceful sanctuary to relax and rejuvenate. Hosted by Vesla, your stay will be a delightful tropical retreat.",
-          price: 140.00,
+          description:
+            "Step into a dreamy world of tropical wonder, surrounded by lush gardens and serene beauty. This small cottage is the epitome of coziness and charm, providing a peaceful sanctuary to relax and rejuvenate. Hosted by Vesla, your stay will be a delightful tropical retreat.",
+          price: 140.0,
         },
         {
           ownerId: 4,
@@ -74,7 +74,7 @@ module.exports = {
           name: "High-Rise Condo",
           description:
             "Take a break from the fast life and rejuvenate in these adorable One Bedroom apartment suites right on Miami Beach. ",
-          price: 223.00,
+          price: 223.0,
         },
         {
           ownerId: 4,
@@ -87,7 +87,7 @@ module.exports = {
           name: "Downtown Loft",
           description:
             "Este 3BR se encuentra en el hermoso distrito de Condesa, hogar de clases de yoga, parejas jóvenes y adolescentes de skate, es el corazón del elegante pero relajante Hipódromo.",
-          price: 153.00,
+          price: 153.0,
         },
         {
           ownerId: 2,
@@ -100,7 +100,7 @@ module.exports = {
           name: "Elegant Estate",
           description:
             "Sublime appartement d'exception de 100m² en Duplex, luxueux, moderne, lumineux, situé en face du Musée du Louvre, du Jardin du Palais Royal et de la rue Saint Honoré.",
-          price: 545.00,
+          price: 545.0,
         },
         {
           ownerId: 3,
@@ -113,7 +113,7 @@ module.exports = {
           name: "Entire Bungalow",
           description:
             "A scenic tea estate on ninety-eight acres of land in fascinating Ella, Bandarawela, Sri Lanka. The colonial era in Ceylon saw this tea estate being larger in extent.",
-          price: 324.00,
+          price: 324.0,
         },
         {
           ownerId: 1,
@@ -126,7 +126,7 @@ module.exports = {
           name: "Cozy Cottage",
           description:
             "This studio apartment has a 615 sq ft indoor and oversized dryer with - oversized double beds and a double sofa bed, suitable for individuals, couples, families, and groups of up to 4 people.",
-          price: 155.00,
+          price: 155.0,
         },
         {
           ownerId: 4,
@@ -139,10 +139,10 @@ module.exports = {
           name: "Downtown Apartment",
           description:
             "Este 3BR se encuentra en el hermoso distrito de Condesa, hogar de clases de yoga, parejas jóvenes y adolescentes de skate, es el corazón del elegante pero relajante Hipódromo.",
-          price: 345.00,
+          price: 345.0,
         },
       ],
-      {}
+      { validate: true }
     );
   },
 

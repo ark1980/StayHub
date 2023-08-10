@@ -9,7 +9,7 @@ if (process.env.NODE_ENV === "production") {
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable(
-      "Spots",
+      "Bookings",
       {
         id: {
           allowNull: false,
@@ -17,41 +17,29 @@ module.exports = {
           primaryKey: true,
           type: Sequelize.INTEGER,
         },
-        ownerId: {
+        spotId: {
+          type: Sequelize.INTEGER,
+          allowNull: false,
+          references: {
+            model: "Spots",
+            key: "id",
+          },
+          onDelete: "cascade",
+        },
+        userId: {
           type: Sequelize.INTEGER,
           allowNull: false,
           references: {
             model: "Users",
-            id: "id",
+            key: "id",
           },
           onDelete: "cascade",
         },
-        address: {
-          type: Sequelize.STRING,
+        startDate: {
+          type: Sequelize.DATE,
         },
-        city: {
-          type: Sequelize.STRING,
-        },
-        state: {
-          type: Sequelize.STRING,
-        },
-        country: {
-          type: Sequelize.STRING,
-        },
-        lat: {
-          type: Sequelize.DECIMAL,
-        },
-        lng: {
-          type: Sequelize.DECIMAL,
-        },
-        name: {
-          type: Sequelize.STRING,
-        },
-        description: {
-          type: Sequelize.STRING,
-        },
-        price: {
-          type: Sequelize.DECIMAL,
+        endDate: {
+          type: Sequelize.DATE,
         },
         createdAt: {
           allowNull: false,
@@ -68,7 +56,7 @@ module.exports = {
     );
   },
   async down(queryInterface, Sequelize) {
-    options.tableName = "Spots";
+    options.tableName = "Bookings";
     return queryInterface.dropTable(options);
   },
 };
