@@ -13,7 +13,7 @@ const {
 } = require("../../db/models");
 const { Op } = require("sequelize");
 
-// All spots
+// Get all spots ======================================================
 router.get("/", async (req, res, next) => {
   const spots = {};
   const allSpots = await Spot.findAll();
@@ -43,7 +43,7 @@ router.get("/", async (req, res, next) => {
     let spotId = spotsList[i]["id"];
     const spotImg = await SpotImage.findOne({
       where: {
-        spotId: spotId,
+        spotId,
         preview: true,
       },
       attributes: ["url", "preview"],
@@ -60,14 +60,57 @@ router.get("/", async (req, res, next) => {
   spots.Spots = spotsList;
 
   res.json(spots);
+  next();
 });
 
-//error handler - maybe delete and include in each endpoint
-router.use((err, req, res, next) => {
-  res.status(err.status || 500);
-  res.send({
-    error: err.message,
+// Get all Spots owned by the Current User =====================================
+router.get("/current", requireAuth, async (req, res, next) => {
+  const spotsList = [];
+  const spots = {};
+  const userId = req.user.id;
+
+   
+
+  const allSpots = await Spot.findAll({
+    include: [{ model: SpotImage }],
+    where: { ownerId: userId },
   });
+
+  // convert each spot to a JSON object
+  allSpots.forEach((spot) => {
+    spotsList.push(spot.toJSON());
+  });
+
+   //add Avg rating to each spot
+   for (let i = 0; i < spotsList.length; i++) {
+    let spotId = spotsList[i]["id"];
+    const starRating = await Review.findOne({
+      where: { spotId },
+      attributes: [
+        [sequelize.fn("AVG", sequelize.col("stars")), "avgStarRating"],
+      ],
+    });
+
+    const reviewJson = starRating.toJSON();
+
+    spotsList[i].avgRating = reviewJson.avgStarRating;
+  }
+
+  //add previewImage to each spot
+  spotsList.forEach((spot) => {
+    spot.SpotImages.forEach((img) => {
+      if (img.preview === true) {
+        spot.previewImage = img.url;
+      }
+    });
+    if (!spot.previewImage) {
+      spot.previewImage = "no preview image found";
+    }
+    delete spot.SpotImages;
+  });
+
+  spots["Spots"] = spotsList;
+  res.json(spots);
 });
 
 module.exports = router;
