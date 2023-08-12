@@ -260,7 +260,6 @@ router.post("/:spotId/bookings", requireAuth, async (req, res, next) => {
   res.json(newBooking);
 });
 
-
 // Get all Reviews by Spot's id ++++++++++++++++++++++++++++++++++++++++++++
 router.get("/:id/reviews", requireAuth, async (req, res, next) => {
   const reviews = {};
@@ -274,7 +273,7 @@ router.get("/:id/reviews", requireAuth, async (req, res, next) => {
 
   if (allReviews.length === 0) {
     const err = new Error();
-    err.message = "Spot couldn't be found"
+    err.message = "Spot couldn't be found";
     err.statusCode = 404;
     return next(err);
   }
@@ -284,17 +283,18 @@ router.get("/:id/reviews", requireAuth, async (req, res, next) => {
 });
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+// Create a Review for a Spot based on the Spot's id -----------------------
 router.post("/:spotId/reviews", requireAuth, async (req, res, next) => {
   const spot = await Spot.findByPk(req.params.spotId);
+
   if (!spot) {
     const err = new Error("Spot couldn't be found");
     err.status = 404;
     return next(err);
   }
 
-  //validation checks: make sure data is appropriate
+  // validation checks
   const { review, stars } = req.body;
-
   if (!review) {
     const err = new Error("Review text is required");
     err.status = 400;
@@ -313,7 +313,7 @@ router.post("/:spotId/reviews", requireAuth, async (req, res, next) => {
       spotId: req.params.spotId,
       userId: req.user.id,
     },
-  });
+  });``
 
   if (reviewsOnSpot) {
     const err = new Error("User already has a review for this spot");
@@ -330,6 +330,7 @@ router.post("/:spotId/reviews", requireAuth, async (req, res, next) => {
 
   res.json(newReview);
 });
+// -------------------------------------------------------------------------
 
 router.post("/:spotId/images", requireAuth, async (req, res, next) => {
   //throws error if spotId doesnt exist
@@ -480,10 +481,9 @@ router.post("/", requireAuth, async (req, res) => {
   res.json(newSpot);
 });
 
-
-//error handler 
+//error handler
 router.use((err, req, res, next) => {
-  res.status(err.statusCode || 500)
+  res.status(err.statusCode || 500);
   res.send({
     message: err.message,
   });
