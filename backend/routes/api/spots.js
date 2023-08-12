@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { setTokenCookie, requireAuth } = require("../../utils/auth");
+const { requireAuth } = require("../../utils/auth");
 const {
   Spot,
   User,
@@ -158,7 +158,7 @@ router.get("/:spotId/bookings", requireAuth, async (req, res, next) => {
   }
 });
 
-///// CREATE A BOOKING FOR A SPOT BASED ON THE SPOT'S ID
+// CREATE A BOOKING FOR A SPOT BASED ON THE SPOT'S ID
 
 router.post("/:spotId/bookings", requireAuth, async (req, res, next) => {
   // check if spot exists
