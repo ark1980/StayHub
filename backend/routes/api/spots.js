@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { setTokenCookie, requireAuth } = require("../../utils/auth");
+const { requireAuth } = require("../../utils/auth");
 const {
   Spot,
   User,
@@ -158,7 +158,7 @@ router.get("/:spotId/bookings", requireAuth, async (req, res, next) => {
   }
 });
 
-///// CREATE A BOOKING FOR A SPOT BASED ON THE SPOT'S ID
+// CREATE A BOOKING FOR A SPOT BASED ON THE SPOT'S ID
 
 router.post("/:spotId/bookings", requireAuth, async (req, res, next) => {
   // check if spot exists
@@ -187,7 +187,6 @@ router.post("/:spotId/bookings", requireAuth, async (req, res, next) => {
   const { startDate, endDate } = req.body;
   const newStartDate = new Date(startDate);
   const newEndDate = new Date(endDate);
-
 
   if (newEndDate.getTime() - newStartDate.getTime() < 0) {
     const err = new Error("endDate cannot be on or before startDate");
@@ -261,63 +260,41 @@ router.post("/:spotId/bookings", requireAuth, async (req, res, next) => {
   res.json(newBooking);
 });
 
-//// Get all Reviews by Spot's id
-router.get("/:spotId/reviews", async (req, res, next) => {
-  const spot = await Spot.findByPk(req.params.spotId);
-  if (!spot) {
-    const err = new Error("Spot couldn't be found");
-    err.status = 404;
+// Get all Reviews by Spot's id ++++++++++++++++++++++++++++++++++++++++++++
+router.get("/:id/reviews", requireAuth, async (req, res, next) => {
+  const reviews = {};
+  const allReviews = await Review.findAll({
+    include: [
+      { model: User, attributes: ["id", "firstName", "lastName"] },
+      { model: ReviewImage, attributes: ["id", "url"] },
+    ],
+    where: { spotId: req.params.id },
+  });
+
+  if (allReviews.length === 0) {
+    const err = new Error();
+    err.message = "Spot couldn't be found";
+    err.statusCode = 404;
     return next(err);
   }
 
-  const reviewsArr = await Review.findAll({
-    where: { spotId: req.params.spotId },
-    include: [
-      {
-        model: User,
-        attributes: {
-          exclude: [
-            "username",
-            "hashedPassword",
-            "email",
-            "createdAt",
-            "updatedAt",
-          ],
-        },
-      },
-      {
-        model: ReviewImage,
-        attributes: {
-          exclude: ["reviewId", "createdAt", "updatedAt"],
-        },
-      },
-    ],
-  });
-
-  const finalArr = [];
-
-  reviewsArr.forEach((rev) => {
-    const review = rev.toJSON();
-    finalArr.push(review);
-  });
-
-  finalReviews = {};
-  finalReviews.Reviews = finalArr;
-
-  res.json(finalReviews);
+  reviews["Reviews"] = allReviews;
+  res.json(reviews);
 });
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+// Create a Review for a Spot based on the Spot's id -----------------------
 router.post("/:spotId/reviews", requireAuth, async (req, res, next) => {
   const spot = await Spot.findByPk(req.params.spotId);
+
   if (!spot) {
     const err = new Error("Spot couldn't be found");
     err.status = 404;
     return next(err);
   }
 
-  //validation checks: make sure data is appropriate
+  // validation checks
   const { review, stars } = req.body;
-
   if (!review) {
     const err = new Error("Review text is required");
     err.status = 400;
@@ -336,7 +313,7 @@ router.post("/:spotId/reviews", requireAuth, async (req, res, next) => {
       spotId: req.params.spotId,
       userId: req.user.id,
     },
-  });
+  });``
 
   if (reviewsOnSpot) {
     const err = new Error("User already has a review for this spot");
@@ -353,6 +330,7 @@ router.post("/:spotId/reviews", requireAuth, async (req, res, next) => {
 
   res.json(newReview);
 });
+// -------------------------------------------------------------------------
 
 router.post("/:spotId/images", requireAuth, async (req, res, next) => {
   //throws error if spotId doesnt exist
@@ -501,6 +479,14 @@ router.post("/", requireAuth, async (req, res) => {
   });
 
   res.json(newSpot);
+});
+
+//error handler
+router.use((err, req, res, next) => {
+  res.status(err.statusCode || 500);
+  res.send({
+    message: err.message,
+  });
 });
 
 module.exports = router;
