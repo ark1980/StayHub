@@ -188,7 +188,6 @@ router.post("/:spotId/bookings", requireAuth, async (req, res, next) => {
   const newStartDate = new Date(startDate);
   const newEndDate = new Date(endDate);
 
-
   if (newEndDate.getTime() - newStartDate.getTime() < 0) {
     const err = new Error("endDate cannot be on or before startDate");
     err.status = 403;
@@ -261,51 +260,22 @@ router.post("/:spotId/bookings", requireAuth, async (req, res, next) => {
   res.json(newBooking);
 });
 
-//// Get all Reviews by Spot's id
-router.get("/:spotId/reviews", async (req, res, next) => {
-  const spot = await Spot.findByPk(req.params.spotId);
-  if (!spot) {
-    const err = new Error("Spot couldn't be found");
-    err.status = 404;
-    return next(err);
-  }
 
-  const reviewsArr = await Review.findAll({
-    where: { spotId: req.params.spotId },
+// Get all Reviews by Spot's id ++++++++++++++++++++++++++++++++++++++++++++
+router.get("/:id/reviews", requireAuth, async (req, res, next) => {
+  const reviews = {};
+  const allReviews = await Review.findAll({
     include: [
-      {
-        model: User,
-        attributes: {
-          exclude: [
-            "username",
-            "hashedPassword",
-            "email",
-            "createdAt",
-            "updatedAt",
-          ],
-        },
-      },
-      {
-        model: ReviewImage,
-        attributes: {
-          exclude: ["reviewId", "createdAt", "updatedAt"],
-        },
-      },
+      { model: User, attributes: ["id", "firstName", "lastName"] },
+      { model: ReviewImage, attributes: ["id", "url"] },
     ],
+    where: { spotId: req.params.id },
   });
 
-  const finalArr = [];
-
-  reviewsArr.forEach((rev) => {
-    const review = rev.toJSON();
-    finalArr.push(review);
-  });
-
-  finalReviews = {};
-  finalReviews.Reviews = finalArr;
-
-  res.json(finalReviews);
+  reviews["Reviews"] = allReviews;
+  res.json(reviews);
 });
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 router.post("/:spotId/reviews", requireAuth, async (req, res, next) => {
   const spot = await Spot.findByPk(req.params.spotId);
