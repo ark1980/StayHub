@@ -272,6 +272,13 @@ router.get("/:id/reviews", requireAuth, async (req, res, next) => {
     where: { spotId: req.params.id },
   });
 
+  if (allReviews.length === 0) {
+    const err = new Error();
+    err.message = "Spot couldn't be found"
+    err.statusCode = 404;
+    return next(err);
+  }
+
   reviews["Reviews"] = allReviews;
   res.json(reviews);
 });
@@ -471,6 +478,15 @@ router.post("/", requireAuth, async (req, res) => {
   });
 
   res.json(newSpot);
+});
+
+
+//error handler 
+router.use((err, req, res, next) => {
+  res.status(err.statusCode || 500)
+  res.send({
+    message: err.message,
+  });
 });
 
 module.exports = router;
