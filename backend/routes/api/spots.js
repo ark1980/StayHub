@@ -13,88 +13,187 @@ const {
 } = require("../../db/models");
 const { Op } = require("sequelize");
 
-// Get all spots ======================================================
-router.get("/", async (req, res, next) => {
-  const spots = {};
-  const allSpots = await Spot.findAll();
-  const spotsList = [];
+router.get("/", async (req, res) => {
+  const {
+    page = 1,
+    size = 20,
+    minLat,
+    maxLat,
+    minLng,
+    maxLng,
+    minPrice,
+    maxPrice,
+  } = req.query;
 
-  // Add Pagination ++++++++++++++++====================++++++++++++++++
-  let { page = 1, size = 20 } = req.query;
-  let pagination = {};
-  // if (!page) page = 1;
-  // if (!size) size = 20;
-
-  //page and size restrictions
   if (page < 1) {
-    const err = new Error("Page must be greater than or equal to 1");
-    err.status = 403;
-    return next(err);
+    res.status(400).json({ error: "Page can not be 0" });
+    return;
   }
-  if (page > 10) page = 10;
 
   if (size < 1) {
-    const err = new Error("Size must be greater than or equal to 1");
-    err.status = 403;
-    return next(err);
+    res.status(400).json({ error: "Size can not be 0" });
+    return;
   }
-  if (size > 20) size = 20;
 
-  if (page >= 1 && size >= 1) {
-    pagination.limit = size;
-    pagination.offset = size * (page - 1);
+  // Validate query parameters
+  if (
+    (minLat && isNaN(minLat)) ||
+    (maxLat && isNaN(maxLat)) ||
+    (minLng && isNaN(minLng)) ||
+    (maxLng && isNaN(maxLng)) ||
+    (minPrice && isNaN(minPrice)) ||
+    (maxPrice && isNaN(maxPrice))
+  ) {
+    res.status(400).json({ error: "Invalid query parameters" });
+    return;
   }
-  // ============== ++++++++++++++++=====================++++++++++++++++
 
-  allSpots.forEach((spot) => {
-    spotsList.push(spot.toJSON());
+  // Build filters based on query parameters
+  const filters = {};
+  if (minLat || maxLat) {
+    filters.lat = {};
+    if (minLat) filters.lat[Op.gte] = minLat;
+    if (maxLat) filters.lat[Op.lte] = maxLat;
+  }
+  if (minLng || maxLng) {
+    filters.lng = {};
+    if (minLng) filters.lng[Op.gte] = minLng;
+    if (maxLng) filters.lng[Op.lte] = maxLng;
+  }
+  if (minPrice || maxPrice) {
+    filters.price = {};
+    if (minPrice) filters.price[Op.gte] = minPrice;
+    if (maxPrice) filters.price[Op.lte] = maxPrice;
+  }
+
+  // Apply querry filters
+  const spots = await Spot.findAll({
+    where: filters,
+    order: [["id"]],
+    limit: +size,
+    offset: (+page - 1) * +size,
+    attributes: [
+      "id",
+      "ownerId",
+      "address",
+      "city",
+      "state",
+      "country",
+      "lat",
+      "lng",
+      "name",
+      "description",
+      "price",
+      "createdAt",
+      "updatedAt",
+    ],
+    include: [
+      {
+        model: SpotImage,
+        attributes: ["url"],
+        where: {
+          preview: true,
+        },
+        required: false,
+      },
+    ],
   });
 
-  //add Avg rating to each spot
-  for (let i = 0; i < spotsList.length; i++) {
-    let spotId = spotsList[i]["id"];
-    const starRating = await Review.findOne({
-      where: { spotId },
-      attributes: [
-        [sequelize.fn("AVG", sequelize.col("stars")), "avgStarRating"],
-      ],
-    });
+  const responseSpots = spots.map((spot) => ({
+    ...spot.toJSON(),
+    previewImage: spot.SpotImages[0]?.url || null,
+    SpotImages: undefined, // Remove the SpotImages array from the response
+  }));
 
-    const reviewJson = starRating.toJSON();
-
-    spotsList[i].avgRating = reviewJson.avgStarRating;
-  }
-
-  //add preview Image to each spot
-  for (let i = 0; i < spotsList.length; i++) {
-    let spotId = spotsList[i]["id"];
-    const spotImg = await SpotImage.findOne({
-      where: {
-        spotId,
-        preview: true,
-      },
-      attributes: ["url", "preview"],
-    });
-
-    if (!spotImg) spotsList[i].previewImage = "no preview image found";
-
-    if (spotImg) {
-      const previewImg = spotImg.toJSON();
-      spotsList[i].previewImage = previewImg.url;
-    }
-  }
-
-  spots.Spots = spotsList;
-
-  const pageNum = Number(page)
-  const sizeNum = Number(size)
-
-  spots.page = pageNum
-  spots.size = sizeNum
-
-  res.json(spots);
-  next();
+  res.json({
+    Spots: responseSpots,
+    page: +page,
+    size: +size,
+  });
 });
+
+// Get all spots ======================================================
+// router.get("/", async (req, res, next) => {
+//   const spots = {};
+//   const allSpots = await Spot.findAll();
+//   const spotsList = [];
+
+//   // Add Pagination ++++++++++++++++====================++++++++++++++++
+//   let { page = 1, size = 20 } = req.query;
+//   let pagination = {};
+//   // if (!page) page = 1;
+//   // if (!size) size = 20;
+
+//   //page and size restrictions
+//   if (page < 1) {
+//     const err = new Error("Page must be greater than or equal to 1");
+//     err.status = 403;
+//     return next(err);
+//   }
+//   if (page > 10) page = 10;
+
+//   if (size < 1) {
+//     const err = new Error("Size must be greater than or equal to 1");
+//     err.status = 403;
+//     return next(err);
+//   }
+//   if (size > 20) size = 20;
+
+//   if (page >= 1 && size >= 1) {
+//     pagination.limit = size;
+//     pagination.offset = size * (page - 1);
+//   }
+//   // ============== ++++++++++++++++=====================++++++++++++++++
+
+//   allSpots.forEach((spot) => {
+//     spotsList.push(spot.toJSON());
+//   });
+
+//   //add Avg rating to each spot
+//   for (let i = 0; i < spotsList.length; i++) {
+//     let spotId = spotsList[i]["id"];
+//     const starRating = await Review.findOne({
+//       where: { spotId },
+//       attributes: [
+//         [sequelize.fn("AVG", sequelize.col("stars")), "avgStarRating"],
+//       ],
+//     });
+
+//     const reviewJson = starRating.toJSON();
+
+//     spotsList[i].avgRating = reviewJson.avgStarRating;
+//   }
+
+//   //add preview Image to each spot
+//   for (let i = 0; i < spotsList.length; i++) {
+//     let spotId = spotsList[i]["id"];
+//     const spotImg = await SpotImage.findOne({
+//       where: {
+//         spotId,
+//         preview: true,
+//       },
+//       attributes: ["url", "preview"],
+//     });
+
+//     if (!spotImg) spotsList[i].previewImage = "no preview image found";
+
+//     if (spotImg) {
+//       const previewImg = spotImg.toJSON();
+//       spotsList[i].previewImage = previewImg.url;
+//     }
+//   }
+
+//   spots.Spots = spotsList;
+
+//   const pageNum = Number(page)
+//   const sizeNum = Number(size)
+
+//   spots.page = pageNum
+//   spots.size = sizeNum
+
+//   res.json(spots);
+//   next();
+// });
 
 // Get all Spots owned by the Current User =====================================
 router.get("/current", requireAuth, async (req, res, next) => {
