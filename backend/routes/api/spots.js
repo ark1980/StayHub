@@ -13,7 +13,7 @@ const {
 } = require("../../db/models");
 const { Op } = require("sequelize");
 
-router.get("/", async (req, res) => {
+router.get("/", async (req, res, next) => {
   const {
     page = 1,
     size = 20,
@@ -26,13 +26,15 @@ router.get("/", async (req, res) => {
   } = req.query;
 
   if (page < 1) {
-    res.status(400).json({ error: "Page can not be 0" });
-    return;
+    const err = new Error("Page can not be 0")
+    res.status(400)
+    return next(err);
   }
 
   if (size < 1) {
-    res.status(400).json({ error: "Size can not be 0" });
-    return;
+    const err = new Error("Size can not be 0")
+    res.status(400)
+    return next(err);
   }
 
   // Validate query parameters
@@ -542,7 +544,7 @@ router.delete("/:spotId", requireAuth, async (req, res, next) => {
   if (!spot) {
     const err = new Error("Spot couldn't be found");
     err.status = 404;
-    next(err);
+    return next(err);
   }
 
   //Must be owner of spot in order to update spot
@@ -616,7 +618,7 @@ router.post("/", requireAuth, async (req, res) => {
 
 //error handler
 router.use((err, req, res, next) => {
-  res.status(err.statusCode || 500);
+  res.status(err.status || 500);
   res.send({
     message: err.message,
   });
