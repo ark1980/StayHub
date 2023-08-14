@@ -19,6 +19,33 @@ router.get("/", async (req, res, next) => {
   const allSpots = await Spot.findAll();
   const spotsList = [];
 
+  // Add Pagination ++++++++++++++++====================++++++++++++++++
+  let { page = 1, size = 20 } = req.query;
+  let pagination = {};
+  // if (!page) page = 1;
+  // if (!size) size = 20;
+
+  //page and size restrictions
+  if (page < 1) {
+    const err = new Error("Page must be greater than or equal to 1");
+    err.status = 403;
+    return next(err);
+  }
+  if (page > 10) page = 10;
+
+  if (size < 1) {
+    const err = new Error("Size must be greater than or equal to 1");
+    err.status = 403;
+    return next(err);
+  }
+  if (size > 20) size = 20;
+
+  if (page >= 1 && size >= 1) {
+    pagination.limit = size;
+    pagination.offset = size * (page - 1);
+  }
+  // ============== ++++++++++++++++=====================++++++++++++++++
+
   allSpots.forEach((spot) => {
     spotsList.push(spot.toJSON());
   });
@@ -58,6 +85,12 @@ router.get("/", async (req, res, next) => {
   }
 
   spots.Spots = spotsList;
+
+  const pageNum = Number(page)
+  const sizeNum = Number(size)
+
+  spots.page = pageNum
+  spots.size = sizeNum
 
   res.json(spots);
   next();
@@ -313,7 +346,8 @@ router.post("/:spotId/reviews", requireAuth, async (req, res, next) => {
       spotId: req.params.spotId,
       userId: req.user.id,
     },
-  });``
+  });
+  ``;
 
   if (reviewsOnSpot) {
     const err = new Error("User already has a review for this spot");
