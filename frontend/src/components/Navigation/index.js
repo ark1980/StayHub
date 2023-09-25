@@ -1,11 +1,12 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import ProfileButton from './ProfileButton';
-import './Navigation.css';
+import React from "react";
+import { NavLink } from "react-router-dom";
+import { useSelector } from "react-redux";
+import ProfileButton from "./ProfileButton";
+import "./Navigation.css";
+import logo from './images/logo.png';
 
-function Navigation({ isLoaded }){
-  const sessionUser = useSelector(state => state.session.user);
+function Navigation({ isLoaded }) {
+  const sessionUser = useSelector((state) => state.session.user);
 
   let sessionLinks;
   if (sessionUser) {
@@ -24,12 +25,21 @@ function Navigation({ isLoaded }){
   }
 
   return (
-    <ul>
-      <li>
-        <NavLink exact to="/">Home</NavLink>
-      </li>
-      {isLoaded && sessionLinks}
-    </ul>
+    <header>
+      <div className="logo">
+        <img src={logo} alt="logo" />
+      </div>
+      <nav>
+        <ul>
+          <li>
+            <NavLink exact to="/">
+              Home
+            </NavLink>
+          </li>
+          {isLoaded && sessionLinks}
+        </ul>
+      </nav>
+    </header>
   );
 }
 
