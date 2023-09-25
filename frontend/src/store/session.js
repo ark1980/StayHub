@@ -51,6 +51,15 @@ export const signup = (user) => async (dispatch) => {
 };
 
 
+// LOGOUT UP THUNK ACTION
+export const logout = () => async (dispatch) => {
+  const response = await csrfFetch('/api/session', {
+    method: 'DELETE',
+  });
+  dispatch(removeUser());
+  return response;
+};
+
 // Restore user
 export const restoreUser = () => async (dispatch) => {
   const response = await csrfFetch("/api/session");
