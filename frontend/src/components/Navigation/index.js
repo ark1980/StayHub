@@ -40,11 +40,6 @@ function Navigation({ isLoaded }) {
       <nav>
         <ul>
           <li>
-            <NavLink exact to="/">
-              Home
-            </NavLink>
-          </li>
-          <li>
             <ProfileButton user={sessionUser} />
           </li>
         </ul>
