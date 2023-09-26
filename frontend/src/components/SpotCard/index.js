@@ -6,7 +6,7 @@ import noPreviewImageUrl from "./no-image.png";
 const SpotCard = ({ spots }) => {
   return (
     <>
-      <Tooltip id="tooltip" />
+      
       {spots.map(
         ({ id, previewImage, city, state, price, avgRating, name }) => {
           console.log(
@@ -53,6 +53,7 @@ const SpotCard = ({ spots }) => {
           );
         }
       )}
+      <Tooltip id="tooltip" />
     </>
   );
 };
