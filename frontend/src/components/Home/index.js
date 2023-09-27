@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-
 import { useDispatch, useSelector } from "react-redux";
 import { getAllSpots } from "../../store/spots";
 import SpotCard from "../SpotCard";
@@ -13,11 +12,14 @@ const Home = () => {
   }, [dispatch]);
 
   const spotsList = useSelector((state) => state.spots);
-  const spots = Object.values(spotsList.spots);
-  
+
+  const spots = spotsList.Spots;
+  // const normalizedSpots = {}; 
+  // spots.forEach(spot => normalizedSpots[spot.id] = spot);
+  // const allSpots = Object.values(normalizedSpots);
 
   if (!spots) {
-    return null;
+    return <h1>Loading...</h1>;
   }
 
   return (

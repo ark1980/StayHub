@@ -9,10 +9,6 @@ const SpotCard = ({ spots }) => {
       
       {spots.map(
         ({ id, previewImage, city, state, price, avgRating, name }) => {
-          console.log(
-            "🚀 ~ file: index.js:11 ~ SpotCard ~ avgRating:",
-            avgRating
-          );
 
           return (
             <li key={id} className="spot-card">
@@ -41,11 +37,11 @@ const SpotCard = ({ spots }) => {
                   <p className="spot-price">${price}.00 Night</p>
                 </div>
                 <div>
-                  <p id="avgRating">
+                  <p className="avgRating">
                     <i className="fa-solid fa-star"></i>
-                    {avgRating === undefined
-                      ? "New"
-                      : parseFloat(avgRating).toFixed(1)}
+                    {!avgRating
+                  ? "New"
+                  : parseFloat(avgRating).toFixed(1)}
                   </p>
                 </div>
               </div>
