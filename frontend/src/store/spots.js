@@ -14,7 +14,7 @@ const singleSpot = (spot) => ({
   spot
 })
 
-// THUNK ACTIONS =================================================
+// THUNK ACTIONS ============================================
 // export const getAllSpots = () => async (dispatch) => {
 //   const res = await fetch('/api/spots');
 //   if(res.ok){
