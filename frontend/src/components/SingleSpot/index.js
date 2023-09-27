@@ -3,6 +3,7 @@ import { Link, useParams, useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getSingleSpot } from "../../store/spots";
 import noPreviewImageUrl from "./no-image.png";
+import SingleSpotReviews from "../SingleSpotReviews";
 
 import "./SingleSpot.css";
 
@@ -26,6 +27,7 @@ const SingleSpot = () => {
     avgStarRating,
     SpotImages,
     User,
+    numReviews,
   } = spot;
 
   if (!spot) {
@@ -133,10 +135,13 @@ const SingleSpot = () => {
         <div className="price-reserve-section">
           <div className="price-review">
             <span>${price} night</span>
-            <span>
-              {!avgStarRating ? "New" : parseFloat(avgStarRating).toFixed(1)}
-              <i className="fa-solid fa-star"></i>
-            </span>
+            <div className="star-rating-num-reviews">
+              <span>
+                {!avgStarRating ? "New" : parseFloat(avgStarRating).toFixed(1)}
+                <i className="fa-solid fa-star star-rating"></i>
+              </span>
+              <span>{numReviews} review</span>
+            </div>
           </div>
           <button
             className="reserve-btn"
@@ -145,6 +150,15 @@ const SingleSpot = () => {
             Reserve
           </button>
         </div>
+      </div>
+      <hr />
+      <div className="spot-reviews">
+        <div className="star-rating-num-reviews">
+          {!avgStarRating ? "New" : parseFloat(avgStarRating).toFixed(1)}
+          <i className="fa-solid fa-star star-rating"></i>
+          <span>{numReviews} review</span>
+        </div>
+        <SingleSpotReviews spot={spot} />
       </div>
     </>
   );

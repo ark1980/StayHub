@@ -1,11 +1,17 @@
 import { csrfFetch } from "./csrf";
 
 const SINGLE_SPOT_REVIEW = "reviews/SINGLE_SPOT_REVIEW";
+const DELETE_REVIEW = "reviews/DELETE_REVIEW";
 
 // Actions =============================================
 const singleSpotReviews = (reviews) => ({
   type: SINGLE_SPOT_REVIEW,
   reviews,
+});
+
+export const deleteReview = (reviewId) => ({
+  type: DELETE_REVIEW,
+  reviewId,
 });
 
 // THUNK ACTIONS =======================================
@@ -17,6 +23,18 @@ export const getSingleSpotReviews = (spotId) => async (dispatch) => {
   } else {
     const errors = res.json();
     return errors;
+  }
+};
+
+export const deleteSingleReview = (reviewId) => async (dispatch) => {
+  try {
+    const res = await csrfFetch(`/api/reviews/${reviewId}`, {
+      method: "DELETE",
+    });
+    dispatch(deleteReview(reviewId));
+  } catch (err) {
+    const error = err.json();
+    return error;
   }
 };
 
@@ -32,6 +50,10 @@ const reviewReducer = (state = initialState, action) => {
         reviewsState[review.id] = review;
       });
       return reviewsState;
+    case DELETE_REVIEW:
+      const newState = { ...state };
+      delete newState[action.reviewId];
+      return newState;
     default:
       return state;
   }
