@@ -1,15 +1,19 @@
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { Tooltip } from "react-tooltip";
 import "./SpotCard.css";
 import noPreviewImageUrl from "./no-image.png";
+import { removeSpot } from "../../store/spots";
+import { useModal } from "../../context/Modal";
 
-const SpotCard = ({ spots }) => {
+const SpotCard = ({ spots, sessionUser }) => {
+  const dispatch = useDispatch();
+  const {closeModal} = useModal()
+
   return (
     <>
-      
       {spots.map(
         ({ id, previewImage, city, state, price, avgRating, name }) => {
-
           return (
             <li key={id} className="spot-card">
               <Link
@@ -22,7 +26,9 @@ const SpotCard = ({ spots }) => {
                 <img
                   className="spotImage"
                   src={
-                    !previewImage || previewImage.length < 10
+                    !previewImage ||
+                    previewImage === "image url" ||
+                    previewImage === "no preview image found"
                       ? noPreviewImageUrl
                       : previewImage
                   }
@@ -39,12 +45,26 @@ const SpotCard = ({ spots }) => {
                 <div>
                   <p className="avgRating">
                     <i className="fa-solid fa-star"></i>
-                    {!avgRating
-                  ? "New"
-                  : parseFloat(avgRating).toFixed(1)}
+                    {!avgRating ? "New" : parseFloat(avgRating).toFixed(1)}
                   </p>
                 </div>
               </div>
+              {sessionUser && (
+                <div className="delete-update-btn">
+                  <button
+                    className="primary-btn"
+                    onClick={(e) => {
+                      // e.preventDefault();
+                      dispatch(removeSpot(id));
+                      // closeModal();
+                      // window.location.reload();
+                    }}
+                  >
+                    DELETE
+                  </button>
+                  <button className="primary-btn">UPDATE</button>
+                </div>
+              )}
             </li>
           );
         }

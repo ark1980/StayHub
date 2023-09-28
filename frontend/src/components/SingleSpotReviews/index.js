@@ -71,7 +71,7 @@ const SingleSpotReviews = ({ spot }) => {
             </p>
             <p>{review.review}</p>
             {review.userId === sessionUser?.id && (
-              <button className="review-btn">
+              <button className="primary-btn">
                 <OpenModalMenuItem
                   itemText="Delete"
                   modalComponent={<DeleteReviewModal review={review} />}

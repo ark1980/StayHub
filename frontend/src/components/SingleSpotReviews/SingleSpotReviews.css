@@ -1,12 +1,13 @@
-.review-btn {
+.primary-btn {
   border: none;
   border-radius: none;
   margin: 10px 0;
   padding: 10px 30px;
   cursor: pointer;
+  background-color: #cdcdcb;
 }
 
-.review-btn:hover {
+.primary-btn:hover {
   background-color: #F8385D;
   color: #FFFFFF;
 }
