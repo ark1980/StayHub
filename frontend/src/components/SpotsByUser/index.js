@@ -1,35 +1,32 @@
-import { useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import SpotCard from "../SpotCard";
-import { getAllSpotsbyUser } from "../../store/spots";
-import noPreviewImageUrl from "./no-image.png";
+import { getAllSpots } from "../../store/spots";
 
 import "./SpotsByUser.css";
 
 const SpotsByUser = () => {
-  const sessionUser = useSelector((state) => state.session.user);
-
   const dispatch = useDispatch();
-  const spots = useSelector((state) => {
-    return state.spots.allSpots;
-  });
+  const sessionUser = useSelector((state) => state.session.user);
+  const spots = useSelector((state) => state.spots.allSpots.Spots);
 
-  useEffect(() => {
-    dispatch(getAllSpotsbyUser());
-  }, [dispatch]);
-
-  if (!spots) {
+  if (!spots || !spots.length) {
+    dispatch(getAllSpots());
     return null;
   }
 
-  const spotsArr = Object.values(spots);
+  const spotsUser = spots.filter((spot) => spot.ownerId === sessionUser.id);
 
   return (
     <>
       <h1>Manage Spots</h1>
-      <ul className="spots-container">
-        {spots && <SpotCard spots={spotsArr} sessionUser={sessionUser} />}
-      </ul>
+      {spotsUser.length ? (
+        <ul className="spots-container">
+          {spots && <SpotCard spots={spotsUser} sessionUser={sessionUser} />}
+        </ul>
+      ) : (
+        <Link to="/spots/new">Create a New Spot</Link>
+      )}
     </>
   );
 };

@@ -3,12 +3,12 @@ import { useDispatch } from "react-redux";
 import { Tooltip } from "react-tooltip";
 import "./SpotCard.css";
 import noPreviewImageUrl from "./no-image.png";
-import { removeSpot } from "../../store/spots";
+import { removeSpot, updateSpot } from "../../store/spots";
 import { useModal } from "../../context/Modal";
 
 const SpotCard = ({ spots, sessionUser }) => {
   const dispatch = useDispatch();
-  const {closeModal} = useModal()
+  const { closeModal } = useModal();
 
   return (
     <>
@@ -53,10 +53,9 @@ const SpotCard = ({ spots, sessionUser }) => {
                 <div className="delete-update-btn">
                   <button
                     className="primary-btn"
-                    onClick={(e) => {
-                      // e.preventDefault();
+                    onClick={() => {
                       dispatch(removeSpot(id));
-                      // closeModal();
+                      // force reloading --- need to remove
                       // window.location.reload();
                     }}
                   >
