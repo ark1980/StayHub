@@ -38,6 +38,7 @@ function Navigation({ isLoaded }) {
         </Link>
       </div>
       <nav>
+      {sessionUser && <Link to="/spots/new">Create New Spot</Link>}
         <ul>
           <li>
             <ProfileButton user={sessionUser} />

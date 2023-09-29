@@ -16,6 +16,13 @@ header {
 }
 
 /* navigation menu */
+nav {
+  display: flex;
+  min-width: 200px;
+  align-items: center;
+  justify-content: space-between;
+};
+
 nav ul {
   list-style: none;
   padding: 0;

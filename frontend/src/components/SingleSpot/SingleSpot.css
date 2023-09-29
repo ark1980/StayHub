@@ -39,6 +39,7 @@ h2 {
 }
 
 .spot-details {
+  margin-bottom: 40px;
   width: 100%;
   display: flex;
   align-items: start;
@@ -81,3 +82,15 @@ h2 {
   margin: 20px 0;
 }
 
+.star-rating-num-reviews {
+  font-weight: bold;
+}
+
+.spot-reviews {
+  width: 100%;
+  margin: 30px 0;
+}
+
+.star-rating {
+  margin: 0 20px 0 5px;
+}

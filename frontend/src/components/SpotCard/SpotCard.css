@@ -24,3 +24,31 @@
 .spot-location {
   margin-bottom: 15px;
 }
+
+.delete-update-btn {
+  display: flex;
+  justify-content: space-between;
+}
+
+.primary-btn {
+  border: none;
+  border-radius: none;
+  margin: 10px 0;
+  padding: 10px 30px;
+  cursor: pointer;
+  background-color: #cdcdcb;
+}
+
+.primary-btn:hover {
+  background-color: #F8385D;
+  color: #FFFFFF;
+}
+
+.update-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.update-link:hover {
+  color: #FFFFFF;
+}

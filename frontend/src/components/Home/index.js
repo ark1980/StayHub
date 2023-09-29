@@ -11,12 +11,7 @@ const Home = () => {
     dispatch(getAllSpots());
   }, [dispatch]);
 
-  const spotsList = useSelector((state) => state.spots);
-
-  const spots = spotsList.Spots;
-  // const normalizedSpots = {}; 
-  // spots.forEach(spot => normalizedSpots[spot.id] = spot);
-  // const allSpots = Object.values(normalizedSpots);
+  const spots = useSelector((state) => state.spots.allSpots.Spots);
 
   if (!spots) {
     return <h1>Loading...</h1>;
