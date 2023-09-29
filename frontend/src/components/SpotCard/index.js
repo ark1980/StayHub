@@ -61,7 +61,9 @@ const SpotCard = ({ spots, sessionUser }) => {
                   >
                     DELETE
                   </button>
-                  <button className="primary-btn">UPDATE</button>
+                  <button className="primary-btn">
+                    <Link className="update-link" to={`/spots/${id}/edit`}>UPDATE</Link>
+                  </button>
                 </div>
               )}
             </li>

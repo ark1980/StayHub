@@ -137,7 +137,7 @@ export const updateSpot = (newSpot, spotId) => async (dispatch) => {
 
   if (response.ok) {
     const spotDetails = await response.json();
-    dispatch(updateSpot(spotDetails));
+    dispatch(editSpot(spotDetails));
     return spotDetails;
   }
 };
@@ -149,7 +149,7 @@ const initialState = {
 };
 
 const spotsReducer = (state = initialState, action) => {
-  const newSpots = { ...state.allSpots.Spots };
+  // const newSpots = { ...state.allSpots.Spots };
   switch (action.type) {
     case GET_ALL_SPOTS:
       return { ...state, allSpots: action.spots };
@@ -166,6 +166,8 @@ const spotsReducer = (state = initialState, action) => {
       return { ...state, ...action.spot };
     case ADD_PHOTOS:
       return { ...state };
+      case UPDATE_SPOT:
+        return { ...state, singleSpot: action.spot };
     default:
       return state;
   }

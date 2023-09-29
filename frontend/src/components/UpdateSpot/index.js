@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import "./NewSpot.css";
 import { createNewSpot, addPhotosToSpot } from "../../store/spots";
 import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { getSingleSpot, updateSpot } from "../../store/spots";
 
-const NewSpot = () => {
-  const history = useHistory();
-  const dispatch = useDispatch();
+import "./UpdateSpot.css";
 
+const UpdateSpot = () => {
   const [country, setCountry] = useState("");
   const [streetAddress, setStreetAddress] = useState("");
   const [city, setCity] = useState("");
@@ -15,61 +15,83 @@ const NewSpot = () => {
   const [description, setDescription] = useState("");
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
-  const [previewPhoto, setPreviewPhoto] = useState("");
-  const [photo1, setPhoto1] = useState("");
-  const [photo2, setPhoto2] = useState("");
-  const [photo3, setPhoto3] = useState("");
-  const [photo4, setPhoto4] = useState("");
+
   const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const [errors, setErrors] = useState({});
+  const dispatch = useDispatch();
+  const history = useHistory();
+
+  const sessionUser = useSelector((state) => state.session.user);
+  //if user not logged in, go back to home
+  if (!sessionUser) history.push(`/`);
+
+  const singleSpot = useSelector((state) => {
+    return state.spots.singleSpot;
+  });
+
+  useEffect(() => {
+    const fillFeilds = async () => {
+      const spotInfo = await dispatch(getSingleSpot(spotId));
+
+      setCountry(spotInfo.country);
+      setStreetAddress(spotInfo.address);
+      setCity(spotInfo.city);
+      setState(spotInfo.state);
+      setDescription(spotInfo.description);
+      setTitle(spotInfo.name);
+      setPrice(spotInfo.price);
+    };
+    fillFeilds();
+  }, [dispatch]);
+
+  //if not owner of spot, redirect to home
+
+  let isOwner = true;
+  if (
+    Object.keys(singleSpot).length > 0 &&
+    singleSpot.ownerId !== sessionUser.id
+  )
+    isOwner = false;
+  if (isOwner === false) history.push(`/`);
+
+  let spotId = useParams().spotId;
 
   useEffect(() => {
     let newErrors = {};
-    if (country.length === 0) {
+
+    //errors to push
+    if (!country) {
       newErrors.country = "Country is required";
     }
-    if (streetAddress.length === 0) {
+    if (!streetAddress) {
       newErrors.streetAddress = "Address is required";
     }
-    if (city.length === 0) {
+    if (!city) {
       newErrors.city = "City is required";
     }
-    if (state.length === 0) {
+    if (!state) {
       newErrors.state = "State is required";
     }
-    if (description.length < 30) {
+    if (!description || description.length < 30) {
       newErrors.description = "Description needs a minimum of 30 characters";
     }
-    if (title.length === 0) {
+    if (!title) {
       newErrors.title = "Name is required";
     }
-    if (price.length === 0) {
+    if (!price) {
       newErrors.price = "Price is required";
-    }
-    if (previewPhoto.length === 0) {
-      newErrors.previewPhoto = "Preview image is required";
     }
 
     setErrors(newErrors);
-  }, [
-    country,
-    streetAddress,
-    city,
-    state,
-    description,
-    title,
-    price,
-    previewPhoto,
-  ]);
+  }, [country, streetAddress, city, state, description, title, price]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    //return if errors
     setHasSubmitted(true);
     if (Object.keys(errors).length > 0) return alert(`Cannot Submit`);
-
-    let photosArr;
 
     const newSpot = {
       country,
@@ -81,50 +103,10 @@ const NewSpot = () => {
       price,
     };
 
-    photosArr = [];
+    const updatedSpot = await dispatch(updateSpot(newSpot, spotId));
 
-    let previewImgObj = {
-      url: previewPhoto,
-      preview: "true",
-    };
-
-    photosArr.push(previewImgObj);
-
-    if (photo1) {
-      photosArr.push({
-        url: photo1,
-        preview: "false",
-      });
-    }
-    if (photo2) {
-      photosArr.push({
-        url: photo2,
-        preview: "false",
-      });
-    }
-    if (photo3) {
-      photosArr.push({
-        url: photo3,
-        preview: "false",
-      });
-    }
-    if (photo4) {
-      photosArr.push({
-        url: photo4,
-        preview: "false",
-      });
-    }
-
-    let createdSpot = await dispatch(createNewSpot(newSpot));
-
-    let spotId = createdSpot.id;
-
-    if (createdSpot) {
-      dispatch(addPhotosToSpot(photosArr, spotId));
-    }
-
-    if (createdSpot) {
-      history.push(`/spots/${createdSpot.id}`);
+    if (updatedSpot) {
+      history.push(`/spots/${spotId}`);
     }
   };
 
@@ -132,7 +114,7 @@ const NewSpot = () => {
     <div className="new-spot-form-div">
       <form className="new-spot-form" onSubmit={handleSubmit}>
         <div className="form-header">
-          <h2 className="form-title">Create a new Spot</h2>
+          <h2 className="form-title">Update Your Spot</h2>
           <h3>Where's your place located?</h3>
           <p>
             Guests will only get your exact address once they booked a
@@ -183,7 +165,6 @@ const NewSpot = () => {
             />
           </label>
         </div>
-        <div className="form-stack stack-left"></div>
         <label for="description">
           <h3>Describe your place to guests:</h3>
           <p>
@@ -196,10 +177,9 @@ const NewSpot = () => {
             cols="30"
             rows="10"
             placeholder="Description"
+            value={description}
             onChange={(e) => setDescription(e.target.value)}
-          >
-            {description}
-          </textarea>
+          ></textarea>
         </label>
         <p>
           <span className="error">{hasSubmitted && errors.description}</span>
@@ -234,61 +214,11 @@ const NewSpot = () => {
           />
         </label>
         <span className="error">{hasSubmitted && errors.price}</span>
-        <label>
-          <h3>Liven up your spot with photos</h3>
-          <p>
-            Competitive pricing can help your listing stand out and rank higher
-            in search results.
-          </p>
-          <input
-            type="text"
-            name="previewPhoto"
-            value={previewPhoto}
-            placeholder="Preview Image URL"
-            onChange={(e) => setPreviewPhoto(e.target.value)}
-          />
-        </label>
-        <span className="error">{hasSubmitted && errors.previewPhoto}</span>
-        <label>
-          <input
-            type="text"
-            name="photo1"
-            value={photo1}
-            placeholder="Image URL"
-            onChange={(e) => setPhoto1(e.target.value)}
-          />
-        </label>
-        <label>
-          <input
-            type="text"
-            name="photo2"
-            value={photo2}
-            placeholder="Image URL"
-            onChange={(e) => setPhoto2(e.target.value)}
-          />
-        </label>
-        <label>
-          <input
-            type="text"
-            name="photo3"
-            value={photo3}
-            placeholder="Image URL"
-            onChange={(e) => setPhoto3(e.target.value)}
-          />
-        </label>
-        <label>
-          <input
-            type="text"
-            name="photo4"
-            value={photo4}
-            placeholder="Image URL"
-            onChange={(e) => setPhoto4(e.target.value)}
-          />
-        </label>
+
         <br />
         <div className="submit-btn">
           <button className="submit-button" type="submit">
-            Create Spot
+            Update Your Spot
           </button>
         </div>
       </form>
@@ -296,4 +226,4 @@ const NewSpot = () => {
   );
 };
 
-export default NewSpot;
+export default UpdateSpot;

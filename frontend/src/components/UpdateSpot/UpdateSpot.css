@@ -1,3 +1,5 @@
+
+
 .new-spot-form {
   max-width: 40%;
   margin: 2rem auto;
@@ -10,7 +12,6 @@
 .form-header {
   margin-bottom: 15px;
 }
-
 
 .form-title {
   font-size: 1.4em;
@@ -31,6 +32,7 @@ textarea {
 .error {
   color: red;
 }
+
 
 .form-stack {
   display: flex;
