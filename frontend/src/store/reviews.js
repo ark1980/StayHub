@@ -22,6 +22,7 @@ export const getSingleSpotReviews = (spotId) => async (dispatch) => {
     dispatch(singleSpotReviews(reviews));
   } else {
     const errors = res.json();
+    dispatch(singleSpotReviews({Reviews: []}));
     return errors;
   }
 };
@@ -46,6 +47,7 @@ const reviewReducer = (state = initialState, action) => {
     case SINGLE_SPOT_REVIEW:
       const reviewsState = {};
       const reviewsAction = action.reviews;
+      console.log(reviewsAction)
       reviewsAction.Reviews.forEach((review) => {
         reviewsState[review.id] = review;
       });

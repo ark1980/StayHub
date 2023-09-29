@@ -8,9 +8,7 @@ import OpenModalMenuItem from "../Navigation/OpenModalMenuItem";
 import DeleteReviewModal from "./DeleteReviewModal";
 
 const SingleSpotReviews = ({ spot }) => {
-  const reviewsList = useSelector((state) =>
-    state.reviews ? state.reviews : []
-  );
+  const reviewsList = useSelector((state) => state.reviews);
 
   const reviews = Object.values(reviewsList);
   const sessionUser = useSelector((state) => state.session.user);
