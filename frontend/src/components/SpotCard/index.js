@@ -5,64 +5,62 @@ import "./SpotCard.css";
 import noPreviewImageUrl from "./no-image.png";
 import { removeSpot, updateSpot } from "../../store/spots";
 import { useModal } from "../../context/Modal";
+import OpenModalButton from '../OpenModalButton';
+import DeleteSpotModal from './DeleteSpotModal'
 
 const SpotCard = ({ spots, sessionUser }) => {
   const dispatch = useDispatch();
-  const { closeModal } = useModal();
 
   return (
     <>
       {spots.map(
-        ({ id, previewImage, city, state, price, avgRating, name }) => {
+        (spot) => {
           return (
-            <li key={id} className="spot-card">
+            <li key={spot.id} className="spot-card">
               <Link
                 exact
-                to={`/spots/${id}`}
+                to={`/spots/${spot.id}`}
                 data-tooltip-id="tooltip"
-                data-tooltip-content={name}
+                data-tooltip-content={spot.name}
                 data-tooltip-place="top"
               >
                 <img
                   className="spotImage"
                   src={
-                    !previewImage ||
-                    previewImage === "image url" ||
-                    previewImage === "no preview image found"
+                    !spot.previewImage ||
+                    spot.previewImage === "image url" ||
+                    spot.previewImage === "no preview image found"
                       ? noPreviewImageUrl
-                      : previewImage
+                      : spot.previewImage
                   }
-                  alt={`Spot ${id}`}
+                  alt={`Spot ${spot.id}`}
                 />
               </Link>
               <div className="spot-info">
                 <div>
                   <p className="spot-location">
-                    {city}, {state}
+                    {spot.city}, {spot.state}
                   </p>
-                  <p className="spot-price">${price}.00 Night</p>
+                  <p className="spot-price">${spot.price}.00 Night</p>
                 </div>
                 <div>
                   <p className="avgRating">
                     <i className="fa-solid fa-star"></i>
-                    {!avgRating ? "New" : parseFloat(avgRating).toFixed(1)}
+                    {!spot.avgRating ? "New" : parseFloat(spot.avgRating).toFixed(1)}
                   </p>
                 </div>
               </div>
               {sessionUser && (
                 <div className="delete-update-btn">
-                  <button
-                    className="primary-btn"
-                    onClick={() => {
-                      dispatch(removeSpot(id));
-                      // force reloading --- need to remove
-                      // window.location.reload();
-                    }}
-                  >
-                    DELETE
-                  </button>
+                <OpenModalButton 
+                  buttonText="DELETE"
+                  modalComponent={<DeleteSpotModal spot={spot} />}
+                  // onClick={() => onDeleteClick}>
+                  // spot={spot}
+                  // className="primary-btn"
+                />
                   <button className="primary-btn">
-                    <Link className="update-link" to={`/spots/${id}/edit`}>UPDATE</Link>
+                    <Link className="update-link" to={`/spots/${spot.id}/edit`}>UPDATE</Link>
                   </button>
                 </div>
               )}
