@@ -45,13 +45,16 @@ const initialState = {};
 const reviewReducer = (state = initialState, action) => {
   switch (action.type) {
     case SINGLE_SPOT_REVIEW:
-      const reviewsState = {};
-      const reviewsAction = action.reviews;
-      console.log(reviewsAction)
-      reviewsAction.Reviews.forEach((review) => {
-        reviewsState[review.id] = review;
-      });
-      return reviewsState;
+      // const reviewsState = {};
+      // const reviewsAction = action.reviews;
+      // reviewsAction.Reviews.forEach((review) => {
+      //   reviewsState[review.id] = review;
+      // });
+      // return reviewsState;
+      return {
+        ...state,
+        ...action.reviews.Reviews,
+      };
     case DELETE_REVIEW:
       const newState = { ...state };
       delete newState[action.reviewId];

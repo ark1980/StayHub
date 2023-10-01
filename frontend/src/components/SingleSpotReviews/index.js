@@ -8,12 +8,15 @@ import OpenModalMenuItem from "../Navigation/OpenModalMenuItem";
 import DeleteReviewModal from "./DeleteReviewModal";
 
 const SingleSpotReviews = ({ spot }) => {
+  
+  const dispatch = useDispatch();
+  const sessionUser = useSelector((state) => state.session.user);
   const reviewsList = useSelector((state) => state.reviews);
 
   const reviews = Object.values(reviewsList);
-  const sessionUser = useSelector((state) => state.session.user);
+  console.log("🚀 ~ file: index.js:17 ~ SingleSpotReviews ~ reviews:", reviews)
+  
   const [reviewBtn, setReviewBtn] = useState(true);
-  const dispatch = useDispatch();
 
   useEffect(() => {
     if (
