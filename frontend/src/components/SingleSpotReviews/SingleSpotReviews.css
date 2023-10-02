@@ -8,8 +8,14 @@
 }
 
 .primary-btn:hover {
-  background-color: #F8385D;
-  color: #FFFFFF;
+  background-color: #f8385d;
+  color: #ffffff;
+}
+
+.primary-btn:disabled {
+  background-color: #a9a9a9;
+  color: #666;
+  cursor: not-allowed;
 }
 
 .review {
@@ -24,6 +30,6 @@
 
 .review-date {
   font-weight: bold;
-  font-size: .9em;
+  font-size: 0.9em;
   color: #7e7e77;
 }

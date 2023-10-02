@@ -52,3 +52,17 @@ form input[type="submit"]:hover {
   background-color: #F8385D;
   color: #FFFFFF;
 }
+
+.demo-btn {
+  display: inline-block;
+  margin-left: 10px;
+  border: none;
+  border-radius: none;
+  padding: 10px 30px;
+  cursor: pointer;
+}
+
+.demo-btn:hover {
+  background-color: #F8385D;
+  color: #FFFFFF;
+}

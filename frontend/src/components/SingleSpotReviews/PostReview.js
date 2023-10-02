@@ -12,15 +12,6 @@ function PostReview({ user, spot }) {
   const dispatch = useDispatch();
   const { closeModal } = useModal();
 
-  //   useEffect(() => {
-  //     const errors = {};
-
-  //     if (!comment) errors.comment = "Comment is required";
-  //     if (rating === 0) errors.rating = "Star Rating is required";
-
-  //     setValidationErrors(errors);
-  //   }, [comment, rating]);
-
   const submitReview = async (e) => {
     e.preventDefault();
     setHasSubmitted(true);
@@ -33,7 +24,6 @@ function PostReview({ user, spot }) {
       stars: rating,
     };
 
-    // if (Object.keys(validationErrors).length === 0) {
     const response = await dispatch(addReview(newReview, spot.id)).catch(
       async (res) => {
         const data = await res.json();
@@ -77,12 +67,13 @@ function PostReview({ user, spot }) {
             value={rating}
             onChange={(e) => setRating(e.target.value)}
             type="range"
+            className="range"
             min="1"
             max="5"
           />
           Stars
         </label>
-        <button type="submit" disabled={comment.length < 10 || rating === 0}>
+        <button className="primary-btn" type="submit" disabled={comment.length < 10 || rating === 0}>
           Submit Your Review
         </button>
       </form>
