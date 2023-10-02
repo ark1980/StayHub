@@ -4,86 +4,73 @@ import { useDispatch, useSelector } from "react-redux";
 import { getSingleSpot } from "../../store/spots";
 import { getSingleSpotReviews } from "../../store/reviews";
 import "./SingleSpotReviews.css";
-import OpenModalMenuItem from "../Navigation/OpenModalMenuItem";
+import OpenModalButton from "../OpenModalButton";
 import DeleteReviewModal from "./DeleteReviewModal";
+import PostReview from "./PostReview";
 
-const SingleSpotReviews = ({ spot }) => {
-  
+const SingleSpotReviews = ({ spot, spotId }) => {
   const dispatch = useDispatch();
+
+  const spotReviews = useSelector((state) => state.reviews.spot.Reviews);
   const sessionUser = useSelector((state) => state.session.user);
-  const reviewsList = useSelector((state) => state.reviews);
-
-  const reviews = Object.values(reviewsList);
-  console.log("🚀 ~ file: index.js:17 ~ SingleSpotReviews ~ reviews:", reviews)
-  
-  const [reviewBtn, setReviewBtn] = useState(true);
+  // const spot = useSelector(state => state.spots.singleSpot)
 
   useEffect(() => {
-    if (
-      spot.ownerId === sessionUser?.id ||
-      reviews.some((review) => review.userId === sessionUser?.id) ||
-      !sessionUser
-    ) {
-      setReviewBtn(false);
-    } else {
-      setReviewBtn(true);
-    }
-  }, [spot.ownerId, reviewBtn, sessionUser, reviews.length]);
+    dispatch(getSingleSpotReviews(spotId));
+  }, [dispatch, spotId]);
 
-  useEffect(() => {
-    dispatch(getSingleSpotReviews(spot.id));
-    dispatch(getSingleSpot(spot.id));
-  }, [dispatch, spot.id, sessionUser]);
-
-  if (!reviews.length) {
-    return (
-      <div className="first-review">
-        {spot.numReviews < 1 && <p style={{"margin-top": "10px"}}>Be the first to post a review!</p>}
-        {spot.numReviews < 1 && reviewBtn && (
-          <button className="review-btn">Create a Review</button>
-        )}
-      </div>
-    );
+  if (!spotReviews) {
+    return null;
   }
 
-  const getYear = (reviewDate) => {
-    let date = new Date(reviewDate);
-    return date.getFullYear();
-  };
+  if (!sessionUser) {
+    return null;
+  }
 
-  const getMonth = (reviewDate) => {
-    return new Date(reviewDate).toLocaleString("default", { month: "long" });
-  };
-
-  let sortedReviews = reviews.sort(
-    (dateA, dateB) => new Date(dateB.createdAt) - new Date(dateA.createdAt)
+  const userReview = spotReviews.find(
+    (review) => review.userId === sessionUser.id
   );
 
   return (
-    <div>
-      <ul>
-        {sortedReviews.map((review) => (
-          <li className="review">
-            <p className="reviewer-name">
-              {review.User.firstName} {review.User.lastName}
-            </p>
-            <p className="review-date">
-              {getMonth(review.createdAt)} {getYear(review.createdAt)}
-            </p>
-            <p>{review.review}</p>
-            {review.userId === sessionUser?.id && (
-              <button className="primary-btn">
-                <OpenModalMenuItem
-                  itemText="Delete"
-                  modalComponent={<DeleteReviewModal review={review} />}
-                />
-              </button>
-            )}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+    <>
+      {sessionUser && !userReview && spot.ownerId !== sessionUser.id ? (
+        <OpenModalButton
+          buttonText="Post Your Review"
+          modalComponent={<PostReview user={sessionUser} spot={spot} />}
+        />
+      ) : null}
+      <div className="review-section">
+        {spotReviews.length === 0 &&
+        sessionUser !== null &&
+        sessionUser.id !== spot.ownerId ? (
+          <div>Be the first to post a review!</div>
+        ) : (
+          spotReviews
+            .map((review) => (
+              <div key={review.id} className="review">
+                <div>{review?.User?.firstName}</div>
+                <div>
+                  {new Date(review.createdAt).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                  })}
+                </div>
+                <div>{review.review}</div>
+                {sessionUser.id === review.userId ? (
+                  <OpenModalButton
+                    buttonText="Delete"
+                    modalComponent={
+                      <DeleteReviewModal review={review} spot={spot} />
+                    }
+                  />
+                ) : null}
+              </div>
+            ))
+            .reverse()
+        )}
+      </div>
+    </>
+  );// );
 };
 
 export default SingleSpotReviews;

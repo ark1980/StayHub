@@ -158,7 +158,7 @@ const SingleSpot = () => {
           <i className="fa-solid fa-star star-rating"></i>
           <span>{numReviews} review</span>
         </div>
-        <SingleSpotReviews spot={spot} />
+        <SingleSpotReviews spot={spot} spotId={spotId}/>
       </div>
     </>
   );
