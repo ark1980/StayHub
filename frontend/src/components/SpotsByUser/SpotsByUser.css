@@ -5,3 +5,12 @@
   gap: 20px;
 }
 
+.create-new-spot-link {
+  font-size: 1rem;
+  color: #6e6e6e;
+  text-decoration: none;
+}
+
+.create-new-spot-link:hover {
+  color: #F8385D;
+}

@@ -19,13 +19,13 @@ const SpotsByUser = () => {
 
   return (
     <>
-      <h1>Manage Spots</h1>
+      <h1 className="title">Manage Spots</h1>
       {spotsUser.length ? (
         <ul className="spots-container">
           {spots && <SpotCard spots={spotsUser} sessionUser={sessionUser} />}
         </ul>
       ) : (
-        <Link to="/spots/new">Create a New Spot</Link>
+        <Link className="create-new-spot-link" to="/spots/new">Create a New Spot</Link>
       )}
     </>
   );

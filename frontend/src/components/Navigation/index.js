@@ -1,12 +1,12 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import ProfileButton from './ProfileButton';
+import React from "react";
+import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import ProfileButton from "./ProfileButton";
 import "./Navigation.css";
 import logo from "./images/logo.png";
 
 function Navigation({ isLoaded }) {
-  const sessionUser = useSelector(state => state.session.user);
+  const sessionUser = useSelector((state) => state.session.user);
 
   // let sessionLinks;
   // if (sessionUser) {
@@ -31,19 +31,21 @@ function Navigation({ isLoaded }) {
   // }
 
   return (
-    <header>
+    <header className="header">
       <div className="logo">
         <Link exact to="/">
           <img src={logo} alt="logo" />
         </Link>
       </div>
       <nav>
-      {sessionUser && <Link to="/spots/new">Create New Spot</Link>}
-        <ul>
-          <li>
-            <ProfileButton user={sessionUser} />
-          </li>
-        </ul>
+        {sessionUser && (
+          <Link className="create-new-spot-link" to="/spots/new">
+            Create New Spot
+          </Link>
+        )}
+        <div>
+          <ProfileButton user={sessionUser} />
+        </div>
       </nav>
     </header>
   );

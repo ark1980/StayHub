@@ -1,75 +1,76 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Tooltip } from "react-tooltip";
 import "./SpotCard.css";
 import noPreviewImageUrl from "./no-image.png";
 import { removeSpot, updateSpot } from "../../store/spots";
-import { useModal } from "../../context/Modal";
+import OpenModalButton from "../OpenModalButton";
+import DeleteSpotModal from "./DeleteSpotModal";
+
+import { getSingleSpotReviews } from "../../store/reviews";
 
 const SpotCard = ({ spots, sessionUser }) => {
   const dispatch = useDispatch();
-  const { closeModal } = useModal();
+
 
   return (
     <>
-      {spots.map(
-        ({ id, previewImage, city, state, price, avgRating, name }) => {
-          return (
-            <li key={id} className="spot-card">
-              <Link
-                exact
-                to={`/spots/${id}`}
-                data-tooltip-id="tooltip"
-                data-tooltip-content={name}
-                data-tooltip-place="top"
-              >
-                <img
-                  className="spotImage"
-                  src={
-                    !previewImage ||
-                    previewImage === "image url" ||
-                    previewImage === "no preview image found"
-                      ? noPreviewImageUrl
-                      : previewImage
-                  }
-                  alt={`Spot ${id}`}
-                />
-              </Link>
-              <div className="spot-info">
-                <div>
-                  <p className="spot-location">
-                    {city}, {state}
-                  </p>
-                  <p className="spot-price">${price}.00 Night</p>
-                </div>
-                <div>
-                  <p className="avgRating">
-                    <i className="fa-solid fa-star"></i>
-                    {!avgRating ? "New" : parseFloat(avgRating).toFixed(1)}
-                  </p>
-                </div>
+      {spots.map((spot) => {
+        return (
+          <li key={spot.id} className="spot-card">
+            <Link
+              exact
+              to={`/spots/${spot.id}`}
+              data-tooltip-id="tooltip"
+              data-tooltip-content={spot.name}
+              data-tooltip-place="top"
+            >
+              <img
+                className="spotImage"
+                src={
+                  !spot.previewImage ||
+                  spot.previewImage === "image url" ||
+                  spot.previewImage === "no preview image found"
+                    ? noPreviewImageUrl
+                    : spot.previewImage
+                }
+                alt={`Spot ${spot.id}`}
+              />
+            </Link>
+            <div className="spot-info">
+              <div>
+                <p className="spot-location">
+                  {spot.city}, {spot.state}
+                </p>
+                <p className="spot-price">${spot.price}.00 Night</p>
               </div>
-              {sessionUser && (
-                <div className="delete-update-btn">
-                  <button
-                    className="primary-btn"
-                    onClick={() => {
-                      dispatch(removeSpot(id));
-                      // force reloading --- need to remove
-                      // window.location.reload();
-                    }}
-                  >
-                    DELETE
-                  </button>
-                  <button className="primary-btn">
-                    <Link className="update-link" to={`/spots/${id}/edit`}>UPDATE</Link>
-                  </button>
-                </div>
-              )}
-            </li>
-          );
-        }
-      )}
+              <div>
+                <p className="avgRating">
+                  <i className="fa-solid fa-star"></i>
+                  {!spot.avgStarRating ? "New" : parseInt(spot.id)}
+                </p>
+              </div>
+            </div>
+            {sessionUser && (
+              <div className="delete-update-btn">
+                <OpenModalButton
+                  buttonText="DELETE"
+                  modalComponent={<DeleteSpotModal spot={spot} />}
+                  // onClick={() => onDeleteClick}>
+                  // spot={spot}
+                  // className="primary-btn"
+                />
+                <button className="primary-btn">
+                  <Link className="update-link" to={`/spots/${spot.id}/edit`}>
+                    UPDATE
+                  </Link>
+                </button>
+              </div>
+            )}
+          </li>
+        );
+      })}
       <Tooltip id="tooltip" />
     </>
   );

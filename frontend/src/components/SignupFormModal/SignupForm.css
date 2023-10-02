@@ -1,0 +1,54 @@
+.title {
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+form {
+  text-align: center;
+  border: 1px solid #ccc;
+  padding: 20px;
+  margin: 10px 0;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 300px; /* You can adjust this value as needed */
+}
+
+/* Styling the labels and inputs */
+form label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+form input {
+  width: 90%;
+  padding: 10px;
+  margin: 10px auto;
+  border: 1px solid #F8385D;
+  border-radius: 4px;
+}
+
+/* Styling the submit button */
+form input[type="submit"] {
+  background-color: #007BFF;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+form input[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
+.primary-btn {
+  border: none;
+  border-radius: none;
+  margin: 10px 0;
+  padding: 10px 30px;
+  cursor: pointer;
+  background-color: #cdcdcb;
+}
+
+.primary-btn:hover {
+  background-color: #F8385D;
+  color: #FFFFFF;
+}

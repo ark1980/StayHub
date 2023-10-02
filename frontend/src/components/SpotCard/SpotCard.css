@@ -52,3 +52,12 @@
 .update-link:hover {
   color: #FFFFFF;
 }
+
+.open-modal {
+  padding: 50px 20px;
+  text-align: center;
+}
+
+#confirm-delete-btn {
+  margin-right: 20px;
+}
